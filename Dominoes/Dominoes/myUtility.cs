@@ -1,25 +1,34 @@
 // Utility
 using System.Collections.Generic;
-
+using System;
 class Graph
 {
-    private Dictionary<Object, List<Object>> adj = new Dictionary<Object, List<Object>>();
+    private Dictionary<object, List<object>> adj = new Dictionary<object, List<object>>();
 
     public Graph(){}
-    public Graph(Object[] vertices, Object[][] edges)
+    public Graph(object[] vertices, object[][] edges)
     {
         foreach(var vertex in vertices)
         {
             AddVertex(vertex);
         }
 
-        foreach(Object[] edge in edges)
+        foreach(object[] edge in edges)
         {
             AddEdge(edge[0], edge[1]);
         }
     }
+    public Graph(int n)
+    {
+        // initializes graph with n vertices (0 to n - 1)
 
-    public void AddEdge(Object source, Object dest)
+        for(int i = 0; i < n; i++)
+        {
+            AddVertex(i);
+        }
+    }
+
+    public void AddEdge(object source, object dest)
     {
         // adj[source].append(dest)
         if(adj.ContainsKey(source))
@@ -28,13 +37,19 @@ class Graph
         }
         else
         {
-            adj[source] = new List<Object>(){dest};
+            adj[source] = new List<object>(){dest};
         }
     }
 
-    public void AddVertex(Object v)
+    public void DeleteEdge(object source, object dest)
     {
-        adj[v] = new List<Object>(){};
+        adj[source].Remove(dest);
+        return;
+    }
+    
+    public void AddVertex(object v)
+    {
+        adj[v] = new List<object>(){};
     }
 
     private int NumEdges 
@@ -53,39 +68,17 @@ class Graph
     ///<summary>
     /// Returns the longest path in Graph starting from source.
     ///</summary>
-    public List<Object> LongestPath(Object source)
+    public List<object> LongestPath(object source)
     {
-        
-        //recursively
-
-        // The longest path from source is equal to the the max of the longest paths from each of the neighbouring
-        // vertices (with the travelled edge "blackened" - visited.)
-        //
-        // I can't blacken edges in the same way, but I can carry a dictionary of edges that contains information on
-        // visits
-        //
-        //  What would the runtime be?
-        //      - Large
-        //      - How large?
-        //      - Seriously, how large
-        //      Approx (Average out-edges) ** num_edges
-        //       (e / v) ** e
-        //       = O(e ** e)
-        //       potentially v ** (v ** 2), which is so bad it's not even worth considering. Look at the dominoes,
-        //       v = 13
-        //       e = 16
-        //       (16/13) ** 16 = 27 ...
-        //       Actually not bad for small sets ... 
-        //  Wikipedia says that the longest paths problem is NP hard, so I guess I'll just brute force it.
 
         // if 0 neighbors, return []
         if (adj[source].Count == 0)
         {
-            return new List<Object>(){source};
+            return new List<object>(){source};
         }
         // else, for each neighbor in adj[source]
-        List<Object> bestFound = new List<Object>(){};
-        List<Object> copy = new List<Object>(){};
+        List<object> bestFound = new List<object>(){};
+        List<object> copy = new List<object>(){};
         foreach(var neighbor in adj[source])
         {
             copy.Add(neighbor);
@@ -97,7 +90,7 @@ class Graph
             adj[source].Remove(neighbor); //NOTETOSELF more efficiently implemented with dictionary.
 
         //    -find LongestPath(neighbor)
-            List<Object> L = LongestPath(neighbor);
+            List<object> L = LongestPath(neighbor);
 
         //    -if LongestPath(neighbor).Count is greater then best found, replace
             bestFound = L.Count > bestFound.Count ? L : bestFound;
@@ -133,7 +126,7 @@ static class UtilityFunctions
     ///<summary>
     /// Displays a generic List 
     ///</summary>
-    public static void Display(List<Object> l)
+    public static void Display(List<object> l)
     {
         int c = 1;
         foreach(var obj in l)
